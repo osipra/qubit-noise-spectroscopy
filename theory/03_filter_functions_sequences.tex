@@ -102,24 +102,61 @@ The Hahn echo is a \textbf{bandpass filter} centered at $\omega = 2\pi/t$. By va
 
 \section{CPMG-\texorpdfstring{$n$}{n} Sequence}
 
-% TO BE DERIVED
-%
-% CPMG-n consists of n equally spaced pi pulses at times t_j = (2j-1)t/2n for j = 1,...,n.
-% The modulation function f(t') alternates sign n times.
-% The filter function peaks at omega = n*pi/t.
-%
-% Derivation to be filled in after working through by hand.
+CPMG-$n$ consists of $n$ equally spaced $\pi$ pulses at times:
+
+\begin{equation}
+    t_j = \frac{(2j-1)t}{2n}, \quad j = 1, 2, \ldots, n
+\end{equation}
+
+The modulation function alternates sign at each pulse:
+
+\begin{equation}
+    f(t') = (-1)^k, \quad t_k < t' < t_{k+1}
+\end{equation}
+
+where $t_0 = 0$ and $t_{n+1} = t$. The filter function integral becomes a telescoping sum:
+
+\begin{equation}
+    \int_0^t f(t')\, e^{i\omega t'}\, dt' = \sum_{k=0}^{n} (-1)^k \int_{t_k}^{t_{k+1}} e^{i\omega t'}\, dt' = \sum_{k=0}^{n} (-1)^k \frac{e^{i\omega t_{k+1}} - e^{i\omega t_k}}{i\omega}
+\end{equation}
+
+Adjacent terms in the sum share boundary exponentials with opposite signs, leading to significant cancellation. After collecting terms, substituting $t_k = (2k-1)t/2n$, and summing the resulting geometric series, the sum evaluates to a closed form. Taking the magnitude squared gives \cite{Cywinski2008}:
+
+\begin{equation}
+    \boxed{F_\text{CPMG-n}(\omega, t) = \frac{16\sin^4\!\left(\dfrac{\omega t}{4n}\right)}{\omega^2} \cdot \frac{\sin^2\!\left(\dfrac{\omega t}{2}\right)}{\sin^2\!\left(\dfrac{\omega t}{2n}\right)}}
+\end{equation}
+
+For $n=1$ this reduces exactly to $F_\text{Hahn}(\omega, t) = 16\sin^4(\omega t/4)/\omega^2$, confirming consistency with the Hahn echo result.
+
+The interference factor $\sin^2(\omega t/2)/\sin^2(\omega t/2n)$ is maximized when $\omega t/2n = \pi/2$, giving the approximate peak location:
+
+\begin{equation}
+    \omega_\text{peak} \approx \frac{n\pi}{t}
+\end{equation}
+
+By varying both $n$ and $t$, the filter peak can be swept across the noise spectrum, enabling reconstruction of $S(\omega)$ \cite{Alvarez2011}. Note that the true numerical peak is shifted slightly below $n\pi/t$ due to the $1/\omega^2$ denominator, consistent with the analogous shift observed for the Hahn echo.
 
 \section{XY-8 Sequence}
 
-% TO BE DERIVED
-%
-% XY-8 is a phase-cycled version of CPMG with 8 pulses applied along alternating X and Y axes.
-% The phase cycling suppresses pulse errors that accumulate in CPMG.
-% The modulation function is identical to CPMG-8 for dephasing noise (Z-axis noise).
-% Additional robustness to pulse errors comes from the phase alternation.
-%
-% Derivation to be filled in after working through by hand.
+XY-8 is a phase-cycled dynamical decoupling sequence consisting of 8 $\pi$ pulses applied along alternating $X$ and $Y$ axes in the pattern X--Y--X--Y--Y--X--Y--X, with equally spaced pulse times identical to CPMG-8:
+
+\begin{equation}
+    t_j = \frac{(2j-1)t}{16}, \quad j = 1, 2, \ldots, 8
+\end{equation}
+
+For dephasing noise (Z-axis noise), the modulation function $f(t')$ is identical to CPMG-8, since both X and Y rotations flip the sign of $\sigma_z$ phase accumulation equally. Therefore:
+
+\begin{equation}
+    \boxed{F_\text{XY-8}(\omega, t) = F_\text{CPMG-8}(\omega, t) = \frac{16\sin^4\!\left(\dfrac{\omega t}{32}\right)}{\omega^2} \cdot \frac{\sin^2\!\left(\dfrac{\omega t}{2}\right)}{\sin^2\!\left(\dfrac{\omega t}{16}\right)}}
+\end{equation}
+
+The filter peaks at $\omega_\text{peak} \approx 8\pi/t$.
+
+The advantage of XY-8 over CPMG-8 lies not in the filter function but in \textbf{robustness to pulse errors}. Imperfect $\pi$ pulses leave residual rotations that accumulate coherently in CPMG. The alternating X/Y phase cycling in XY-8 causes these residual errors to cancel to first order, significantly improving performance on real hardware \cite{Gullion1990}.
+
+\subsection*{Note on pulse error suppression}
+
+The filter function formalism assumes ideal $\pi$ pulses. On IBM hardware, gate fidelities are finite and systematic pulse errors are present. For this reason, XY-8 is preferred over CPMG-8 for hardware experiments in this project, even though their filter functions are theoretically identical.
 
 \section{UDD-\texorpdfstring{$n$}{n} Sequence}
 
@@ -144,8 +181,8 @@ The Hahn echo is a \textbf{bandpass filter} centered at $\omega = 2\pi/t$. By va
 \hline
 Ramsey      & $4\sin^2(\omega t/2)/\omega^2$   & $\omega = 0$       & Low-pass \\
 Hahn echo   & $16\sin^4(\omega t/4)/\omega^2$  & $\omega = 2\pi/t$  & Bandpass \\
-CPMG-$n$    & TBD                              & $\omega = n\pi/t$  & Tunable bandpass \\
-XY-8        & TBD                              & $\omega = 8\pi/t$  & Phase-robust bandpass \\
+CPMG-$n$    & $16\sin^4(\omega t/4n)\sin^2(\omega t/2) / [\omega^2\sin^2(\omega t/2n)]$ & $\omega \approx n\pi/t$ & Tunable bandpass \\
+XY-8        & Same as CPMG-8                                                            & $\omega \approx 8\pi/t$ & Phase-robust bandpass \\
 UDD-$n$     & TBD                              & Nonuniform         & Optimal for smooth $S(\omega)$ \\
 \hline
 \end{tabular}
@@ -169,6 +206,11 @@ Phys. Rev. Lett. \textbf{107}, 230501 (2011).
 J. Bylander et al.,
 \textit{Noise spectroscopy through dynamical decoupling with a superconducting flux qubit},
 Nature Physics \textbf{7}, 565 (2011).
+
+\bibitem{Gullion1990}
+T. Gullion, D. B. Baker, and M. S. Conradi,
+\textit{New, compensated Carr-Purcell sequences},
+J. Magn. Reson. \textbf{89}, 479 (1990).
 
 \bibitem{Uhrig2007}
 G. S. Uhrig,
