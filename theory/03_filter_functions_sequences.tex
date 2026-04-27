@@ -160,16 +160,33 @@ The filter function formalism assumes ideal $\pi$ pulses. On IBM hardware, gate 
 
 \section{UDD-\texorpdfstring{$n$}{n} Sequence}
 
-% TO BE DERIVED
-%
-% UDD (Uhrig Dynamical Decoupling) places n pi pulses at nonuniform times:
-%   t_j = t * sin^2(j*pi / 2(n+1)),  j = 1, ..., n
-% This nonuniform spacing is optimal for suppressing dephasing to order n
-% with only n pulses, for smooth S(omega).
-%
-% For sharp-featured S(omega) (e.g. TLS peaks), CPMG may outperform UDD.
-%
-% Derivation to be filled in after working through by hand.
+Uhrig Dynamical Decoupling (UDD) \cite{Uhrig2007} places $n$ $\pi$ pulses at nonuniform times determined by:
+
+\begin{equation}
+    t_j = t \cdot \sin^2\!\left(\frac{j\pi}{2(n+1)}\right), \quad j = 1, 2, \ldots, n
+\end{equation}
+
+This specific spacing is derived by requiring that the coherence decay $\chi(t)$ vanishes to order $n$ in $t$ for a generic smooth $S(\omega)$. Uhrig showed that this is the optimal pulse placement for suppressing dephasing with exactly $n$ pulses \cite{Uhrig2007}, in the sense that no other $n$-pulse sequence can achieve higher-order cancellation.
+
+\subsection*{Filter Function}
+
+The filter function follows the same general sum as CPMG:
+
+\begin{equation}
+    \tilde{F}(\omega, t) = \sum_{k=0}^{n} (-1)^k \frac{e^{i\omega t_{k+1}} - e^{i\omega t_k}}{i\omega}
+\end{equation}
+
+with $t_0 = 0$, $t_{n+1} = t$, and $F_\text{UDD}(\omega, t) = |\tilde{F}(\omega, t)|^2$.
+
+Unlike CPMG, the nonuniform pulse spacing prevents summation as a geometric series. \textbf{No closed-form expression exists for $F_\text{UDD}(\omega, t)$} — the filter function must be evaluated numerically for each $(\omega, t, n)$.
+
+\subsection*{Comparison with CPMG}
+
+UDD is optimal for \textbf{smooth} $S(\omega)$ — noise spectra without sharp features. In this regime, UDD achieves the same suppression order as CPMG with fewer pulses, making it more efficient.
+
+However, for noise with sharp spectral features — such as Lorentzian peaks from TLS defects — CPMG can outperform UDD because its uniform spacing produces a filter function with better-defined harmonic structure that can be tuned to avoid TLS resonances \cite{Cywinski2008}.
+
+In this project, both sequences are implemented and their reconstructed $S(\omega)$ are compared, with the expectation that they agree for smooth noise and diverge near TLS peaks.
 
 \section{Summary}
 
@@ -183,7 +200,7 @@ Ramsey      & $4\sin^2(\omega t/2)/\omega^2$   & $\omega = 0$       & Low-pass \
 Hahn echo   & $16\sin^4(\omega t/4)/\omega^2$  & $\omega = 2\pi/t$  & Bandpass \\
 CPMG-$n$    & $16\sin^4(\omega t/4n)\sin^2(\omega t/2) / [\omega^2\sin^2(\omega t/2n)]$ & $\omega \approx n\pi/t$ & Tunable bandpass \\
 XY-8        & Same as CPMG-8                                                            & $\omega \approx 8\pi/t$ & Phase-robust bandpass \\
-UDD-$n$     & TBD                              & Nonuniform         & Optimal for smooth $S(\omega)$ \\
+UDD-$n$     & No closed form                              & Nonuniform         & Optimal for smooth $S(\omega)$ \\
 \hline
 \end{tabular}
 \caption{Filter functions for dynamical decoupling sequences used in this project.}
