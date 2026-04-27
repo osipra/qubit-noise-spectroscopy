@@ -1,0 +1,180 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath, amssymb}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{physics}
+\usepackage{cite}
+
+\geometry{margin=1in}
+
+\title{Filter Functions for Dynamical Decoupling Sequences}
+\author{osipra}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+We derive explicit filter functions $F(\omega, t)$ for the Ramsey, Hahn echo, CPMG-$n$, XY-8, and UDD-$n$ pulse sequences. Each derivation follows from direct evaluation of the squared Fourier transform of the modulation function $f(t')$, as established in document 02. We characterize each filter function's spectral sensitivity and discuss its implications for noise spectroscopy.
+\end{abstract}
+
+\section{Ramsey Sequence}
+
+For the Ramsey sequence there are no $\pi$ pulses, so $f(t') = 1$ for all $t' \in [0, t]$. The filter function integral evaluates to:
+
+\begin{equation}
+    \int_0^t e^{i\omega t'}\, dt' = \frac{1}{i\omega}\left(e^{i\omega t} - 1\right)
+\end{equation}
+
+Taking the magnitude squared:
+
+\begin{equation}
+    F_\text{Ramsey}(\omega, t) = \frac{1}{\omega^2}\left(e^{i\omega t} - 1\right)\left(e^{-i\omega t} - 1\right) = \frac{2 - 2\cos(\omega t)}{\omega^2}
+\end{equation}
+
+Using the identity $1 - \cos\theta = 2\sin^2(\theta/2)$:
+
+\begin{equation}
+    \boxed{F_\text{Ramsey}(\omega, t) = \frac{4\sin^2(\omega t/2)}{\omega^2}}
+\end{equation}
+
+In the limit $\omega \to 0$, using $\sin(\omega t/2) \approx \omega t/2$:
+
+\begin{equation}
+    F_\text{Ramsey}(\omega \to 0, t) = t^2
+\end{equation}
+
+The Ramsey filter function peaks at $\omega = 0$ with maximum value $t^2$. It is a \textbf{low-pass filter} — maximally sensitive to slow, DC-like noise and quasistatic fluctuations. This is why Ramsey dephasing in superconducting qubits is dominated by $1/f$ noise \cite{Bylander2011}.
+
+\section{Hahn Echo Sequence}
+
+For the Hahn echo, a single $\pi$ pulse is applied at $t/2$, so:
+
+\begin{equation}
+    f(t') = \begin{cases} +1 & 0 \leq t' < t/2 \\ -1 & t/2 \leq t' \leq t \end{cases}
+\end{equation}
+
+The filter function integral splits into two parts:
+
+\begin{equation}
+    \int_0^t f(t')\, e^{i\omega t'}\, dt' = \int_0^{t/2} e^{i\omega t'}\, dt' - \int_{t/2}^{t} e^{i\omega t'}\, dt'
+\end{equation}
+
+Evaluating each integral:
+
+\begin{align}
+    \int_0^{t/2} e^{i\omega t'}\, dt' &= \frac{1}{i\omega}\left(e^{i\omega t/2} - 1\right) \\
+    \int_{t/2}^{t} e^{i\omega t'}\, dt' &= \frac{1}{i\omega}\left(e^{i\omega t} - e^{i\omega t/2}\right)
+\end{align}
+
+Combining:
+
+\begin{equation}
+    \frac{1}{i\omega}\left(2e^{i\omega t/2} - 1 - e^{i\omega t}\right)
+\end{equation}
+
+Factoring out $e^{i\omega t/2}$ and using $2 - e^{-i\omega t/2} - e^{i\omega t/2} = 2 - 2\cos(\omega t/2) = 4\sin^2(\omega t/4)$:
+
+\begin{equation}
+    = \frac{e^{i\omega t/2}}{i\omega}\cdot 4\sin^2\left(\frac{\omega t}{4}\right)
+\end{equation}
+
+Taking the magnitude squared (note $|e^{i\omega t/2}|^2 = 1$):
+
+\begin{equation}
+    \boxed{F_\text{Hahn}(\omega, t) = \frac{16\sin^4(\omega t/4)}{\omega^2}}
+\end{equation}
+
+In the limit $\omega \to 0$:
+
+\begin{equation}
+    F_\text{Hahn}(\omega \to 0, t) \propto \omega^2 t^4 \to 0
+\end{equation}
+
+The Hahn echo filter function \textbf{vanishes at $\omega = 0$}, confirming that the $\pi$ pulse refocuses slow noise completely. The filter peaks at:
+
+\begin{equation}
+    \frac{\omega t}{4} = \frac{\pi}{2} \implies \omega_\text{peak} = \frac{2\pi}{t}
+\end{equation}
+
+The Hahn echo is a \textbf{bandpass filter} centered at $\omega = 2\pi/t$. By varying $t$, the filter peak sweeps across the noise spectrum \cite{Cywinski2008}.
+
+\section{CPMG-\texorpdfstring{$n$}{n} Sequence}
+
+% TO BE DERIVED
+%
+% CPMG-n consists of n equally spaced pi pulses at times t_j = (2j-1)t/2n for j = 1,...,n.
+% The modulation function f(t') alternates sign n times.
+% The filter function peaks at omega = n*pi/t.
+%
+% Derivation to be filled in after working through by hand.
+
+\section{XY-8 Sequence}
+
+% TO BE DERIVED
+%
+% XY-8 is a phase-cycled version of CPMG with 8 pulses applied along alternating X and Y axes.
+% The phase cycling suppresses pulse errors that accumulate in CPMG.
+% The modulation function is identical to CPMG-8 for dephasing noise (Z-axis noise).
+% Additional robustness to pulse errors comes from the phase alternation.
+%
+% Derivation to be filled in after working through by hand.
+
+\section{UDD-\texorpdfstring{$n$}{n} Sequence}
+
+% TO BE DERIVED
+%
+% UDD (Uhrig Dynamical Decoupling) places n pi pulses at nonuniform times:
+%   t_j = t * sin^2(j*pi / 2(n+1)),  j = 1, ..., n
+% This nonuniform spacing is optimal for suppressing dephasing to order n
+% with only n pulses, for smooth S(omega).
+%
+% For sharp-featured S(omega) (e.g. TLS peaks), CPMG may outperform UDD.
+%
+% Derivation to be filled in after working through by hand.
+
+\section{Summary}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{llll}
+\hline
+\textbf{Sequence} & \textbf{Filter function} & \textbf{Peak frequency} & \textbf{Character} \\
+\hline
+Ramsey      & $4\sin^2(\omega t/2)/\omega^2$   & $\omega = 0$       & Low-pass \\
+Hahn echo   & $16\sin^4(\omega t/4)/\omega^2$  & $\omega = 2\pi/t$  & Bandpass \\
+CPMG-$n$    & TBD                              & $\omega = n\pi/t$  & Tunable bandpass \\
+XY-8        & TBD                              & $\omega = 8\pi/t$  & Phase-robust bandpass \\
+UDD-$n$     & TBD                              & Nonuniform         & Optimal for smooth $S(\omega)$ \\
+\hline
+\end{tabular}
+\caption{Filter functions for dynamical decoupling sequences used in this project.}
+\end{table}
+
+\begin{thebibliography}{9}
+
+\bibitem{Cywinski2008}
+L. Cywi\'{n}ski, R. M. Lutchyn, C. P. Nave, and S. Das Sarma,
+\textit{How to enhance dephasing time in superconducting qubits},
+Phys. Rev. B \textbf{77}, 174509 (2008).
+\href{https://arxiv.org/abs/0807.4926}{arXiv:0807.4926}
+
+\bibitem{Alvarez2011}
+G. A. \'{A}lvarez and D. Suter,
+\textit{Measuring the Spectrum of Colored Noise by Dynamical Decoupling},
+Phys. Rev. Lett. \textbf{107}, 230501 (2011).
+
+\bibitem{Bylander2011}
+J. Bylander et al.,
+\textit{Noise spectroscopy through dynamical decoupling with a superconducting flux qubit},
+Nature Physics \textbf{7}, 565 (2011).
+
+\bibitem{Uhrig2007}
+G. S. Uhrig,
+\textit{Keeping a quantum bit alive by optimized $\pi$-pulse sequences},
+Phys. Rev. Lett. \textbf{98}, 100504 (2007).
+
+\end{thebibliography}
+
+\end{document}

@@ -1,0 +1,162 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath, amssymb}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{physics}
+\usepackage{cite}
+
+\geometry{margin=1in}
+
+\title{Filter Function Formalism for Qubit Noise Spectroscopy}
+\author{osipra}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+We derive the filter function formalism for qubit noise spectroscopy from first principles. Starting from the rotating frame Hamiltonian, we connect the coherence decay of a qubit ensemble to the noise power spectral density $S(\omega)$ via the filter function $F(\omega, t)$. The central result is the relation $\chi(t) = \int_0^\infty \frac{d\omega}{2\pi} S(\omega) F(\omega, t)$, which enables reconstruction of $S(\omega)$ from measured coherence decay. Specific pulse sequence filter functions are derived in document 03.
+\end{abstract}
+
+\section{Setup: Rotating Frame Hamiltonian}
+
+We consider a two-level system (qubit) driven on resonance. In the rotating wave approximation (RWA), the Hamiltonian is:
+
+\begin{equation}
+    \hat{H} = -\frac{\hbar \Delta}{2}\hat{\sigma}_z - \frac{\hbar \Omega_R}{2}\hat{\sigma}_x
+\end{equation}
+
+On resonance ($\Delta = 0$), with no drive ($\Omega_R = 0$) during free precession, $\hat{H} = 0$ in the ideal case. However, the qubit frequency is subject to environmental noise:
+
+\begin{equation}
+    \omega(t) = \omega_0 + \delta\omega(t)
+\end{equation}
+
+where $\delta\omega(t)$ is a stochastic fluctuation with zero mean, arising from sources such as charge noise, flux noise, and two-level system (TLS) defects in the substrate \cite{Clerk2010}.
+
+\section{Phase Accumulation and Coherence Decay}
+
+During free precession, the qubit accumulates a random phase:
+
+\begin{equation}
+    \varphi(t) = \int_0^t \delta\omega(t')\, dt'
+\end{equation}
+
+The qubit state on the equator of the Bloch sphere is:
+
+\begin{equation}
+    \rho = \frac{1}{2}\begin{pmatrix} 1 & e^{i\varphi} \\ e^{-i\varphi} & 1 \end{pmatrix}
+\end{equation}
+
+The off-diagonal coherence element, averaged over many noise realizations, gives the ensemble coherence:
+
+\begin{equation}
+    \langle e^{i\varphi(t)} \rangle = e^{-\chi(t)}
+\end{equation}
+
+For Gaussian noise, the cumulant expansion truncates at second order \cite{Kubo1962}:
+
+\begin{equation}
+    \langle e^{i\varphi(t)} \rangle = e^{-\frac{1}{2}\langle \varphi^2(t) \rangle}
+\end{equation}
+
+so that:
+
+\begin{equation}
+    \chi(t) = \frac{1}{2}\langle \varphi^2(t) \rangle
+\end{equation}
+
+Expanding the square of the integral:
+
+\begin{equation}
+    \langle \varphi^2(t) \rangle = \int_0^t \int_0^t \langle \delta\omega(t')\delta\omega(t'')\rangle\, dt'\, dt''
+\end{equation}
+
+\section{Wiener-Khinchin Theorem}
+
+The autocorrelation function $C(t' - t'') = \langle \delta\omega(t')\delta\omega(t'')\rangle$ and the power spectral density $S(\omega)$ are a Fourier pair, related by the Wiener-Khinchin theorem \cite{Wiener1930}:
+
+\begin{equation}
+    C(t' - t'') = \int_{-\infty}^{\infty} \frac{d\omega}{2\pi}\, S(\omega)\, e^{i\omega(t' - t'')}
+\end{equation}
+
+Substituting into the expression for $\langle \varphi^2(t) \rangle$ and swapping the order of integration:
+
+\begin{equation}
+    \langle \varphi^2(t) \rangle = \int_{-\infty}^{\infty} \frac{d\omega}{2\pi}\, S(\omega) \left|\int_0^t e^{i\omega t'}\, dt'\right|^2
+\end{equation}
+
+\section{The Filter Function}
+
+\subsection{General Definition}
+
+For a general pulse sequence, the phase accumulation includes a modulation function $f(t') \in \{+1, -1\}$ that flips sign at each $\pi$ pulse \cite{Cywinski2008}:
+
+\begin{equation}
+    \varphi(t) = \int_0^t f(t')\, \delta\omega(t')\, dt'
+\end{equation}
+
+This leads to the general filter function:
+
+\begin{equation}
+    F(\omega, t) = \left|\int_0^t f(t')\, e^{i\omega t'}\, dt'\right|^2
+\end{equation}
+
+and the central relation of noise spectroscopy:
+
+\begin{equation}
+    \boxed{\chi(t) = \int_0^{\infty} \frac{d\omega}{2\pi}\, S(\omega)\, F(\omega, t)}
+\end{equation}
+
+$F(\omega, t)$ acts as a frequency-selective filter — it determines which frequencies of $S(\omega)$ contribute to the coherence decay. Different pulse sequences correspond to different modulation functions $f(t')$ and therefore different spectral windows \cite{Alvarez2011}. Explicit evaluation of $F(\omega, t)$ for specific sequences is carried out in document 03.
+
+\subsection{Physical Interpretation}
+
+The relation between $\chi(t)$ and $S(\omega)$ is a weighted integral — the pulse sequence acts as a spectral window into the noise environment. By designing sequences with filter functions that peak at different frequencies, one can probe $S(\omega)$ selectively across the spectrum. This is the principle of dynamical decoupling-based noise spectroscopy \cite{Bylander2011}.
+
+The modulation function $f(t')$ encodes the entire pulse sequence:
+\begin{itemize}
+    \item No $\pi$ pulses: $f(t') = +1$ everywhere (Ramsey)
+    \item One $\pi$ pulse at $t/2$: $f(t')$ flips once (Hahn echo)
+    \item $n$ equally spaced $\pi$ pulses: $f(t')$ flips $n$ times (CPMG-$n$)
+\end{itemize}
+
+The filter function $F(\omega, t)$ is then the squared magnitude of the Fourier transform of $f(t')$, weighted by the pulse timing. This makes $F(\omega, t)$ directly computable from the pulse sequence geometry.
+
+\begin{thebibliography}{9}
+
+\bibitem{Cywinski2008}
+L. Cywi\'{n}ski, R. M. Lutchyn, C. P. Nave, and S. Das Sarma,
+\textit{How to enhance dephasing time in superconducting qubits},
+Phys. Rev. B \textbf{77}, 174509 (2008).
+\href{https://arxiv.org/abs/0807.4926}{arXiv:0807.4926}
+
+\bibitem{Alvarez2011}
+G. A. \'{A}lvarez and D. Suter,
+\textit{Measuring the Spectrum of Colored Noise by Dynamical Decoupling},
+Phys. Rev. Lett. \textbf{107}, 230501 (2011).
+
+\bibitem{Bylander2011}
+J. Bylander et al.,
+\textit{Noise spectroscopy through dynamical decoupling with a superconducting flux qubit},
+Nature Physics \textbf{7}, 565 (2011).
+
+\bibitem{Clerk2010}
+A. A. Clerk, M. H. Devoret, S. M. Girvin, F. Marquardt, and R. J. Schoelkopf,
+\textit{Introduction to quantum noise, measurement, and amplification},
+Rev. Mod. Phys. \textbf{82}, 1155 (2010).
+
+\bibitem{Kubo1962}
+R. Kubo,
+\textit{Generalized Cumulant Expansion Method},
+J. Phys. Soc. Japan \textbf{17}, 1100 (1962).
+
+\bibitem{Wiener1930}
+N. Wiener,
+\textit{Generalized harmonic analysis},
+Acta Math. \textbf{55}, 117 (1930).
+
+\end{thebibliography}
+
+\end{document}
