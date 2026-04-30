@@ -25,9 +25,9 @@ where $\chi(t)$ is the coherence decay exponent measured in experiment, and $F(\
 |---|---|---|
 | Ramsey | $\omega = 0$ | Low-frequency / $1/f$ noise |
 | Hahn echo | $\omega = 2\pi/t$ | Bandpass, baseline DD |
-| CPMG-$n$ | $\omega = n\pi/t$ | Tunable bandpass |
+| CPMG- $n$ | $\omega = n\pi/t$ | Tunable bandpass |
 | XY-8 | $\omega = 8\pi/t$ | Phase-cycled, robust to pulse errors |
-| UDD-$n$ | Nonuniform spacing | Optimal suppression for smooth $S(\omega)$ |
+| UDD- $n$ | Nonuniform spacing | Optimal suppression for smooth $S(\omega)$ |
 
 ### Noise Models
 - $1/f^\alpha$ noise (charge noise, flux noise)
