@@ -1,0 +1,171 @@
+\documentclass[10pt]{article}
+\usepackage{amsmath, amssymb}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{physics}
+\usepackage{cite}
+
+\geometry{margin=1in}
+
+\title{Noise Models for Superconducting Qubits}
+\author{Qubit Noise Spectroscopy Project \\ University of Waterloo}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+We describe the three canonical noise contributions to the power spectral density $S(\omega)$ of a superconducting qubit: $1/f^\alpha$ noise arising from a distribution of two-level fluctuators, a white noise floor from Johnson-Nyquist thermal fluctuations, and Lorentzian peaks from individual two-level system (TLS) defects. Each model is derived from its physical origin, expressed mathematically, and discussed in the context of the filter function formalism developed in documents 02 and 03.
+\end{abstract}
+
+\section{Overview}
+
+The noise power spectral density $S(\omega)$ of a superconducting qubit encodes the full frequency-resolved noise environment experienced by the qubit. In practice, $S(\omega)$ for a superconducting qubit is well described by the sum of three physically distinct contributions:
+
+\begin{equation}
+    \boxed{S(\omega) = \frac{A}{\omega^\alpha} + S_0 + \sum_k \frac{A_k \gamma_k^2}{(\omega - \omega_k)^2 + \gamma_k^2}}
+\end{equation}
+
+where the first term is $1/f^\alpha$ noise, the second is a white noise floor, and the sum represents contributions from individual TLS defects. Each term dominates in a different frequency regime: $1/f^\alpha$ at low frequencies, white noise at high frequencies, and TLS peaks at specific intermediate frequencies.
+
+\section{\texorpdfstring{$1/f^\alpha$}{1/f} Noise}
+
+\subsection{Physical Origin}
+
+The qubit frequency $\omega_0$ is sensitive to environmental parameters — charge on the island, magnetic flux through the loop, critical current of the Josephson junction. Each of these is perturbed by fluctuators: charge traps, magnetic impurities, and atomic tunneling systems in the substrate and oxide layers. Each fluctuator switches randomly between two states at a characteristic rate $\gamma_k$, producing a Lorentzian noise contribution:
+
+\begin{equation}
+    S_k(\omega) \propto \frac{\gamma_k}{\omega^2 + \gamma_k^2}
+\end{equation}
+
+When many fluctuators are present with a broad distribution of switching rates, the total noise is obtained by summing over all fluctuators. If the switching rates are distributed uniformly on a logarithmic scale — i.e., there are roughly equal numbers of slow and fast fluctuators — the distribution of rates is $P(\gamma) \propto 1/\gamma$, and the total noise becomes:
+
+\begin{equation}
+    S(\omega) = \int_0^\infty S_k(\omega) P(\gamma)\, d\gamma \propto \int_0^\infty \frac{1}{\omega^2 + \gamma^2}\, d\gamma = \frac{\pi}{2\omega}
+\end{equation}
+
+This integral evaluates to $\pi/2\omega$, giving $S(\omega) \propto 1/\omega$. The $1/f$ spectrum is therefore not a property of any single fluctuator — it is an emergent property of having many fluctuators with a broad distribution of switching rates \cite{Paladino2014}.
+
+\subsection{Mathematical Model}
+
+The generalized $1/f^\alpha$ noise model is:
+
+\begin{equation}
+    \boxed{S_{1/f}(\omega) = \frac{A}{\omega^\alpha}}
+\end{equation}
+
+where $A$ is the noise amplitude and $\alpha$ is the spectral exponent. For pure $1/f$ noise $\alpha = 1$. In superconducting qubits, $\alpha$ typically lies in the range $0.7 \lesssim \alpha \lesssim 1.3$ depending on the device and dominant noise source \cite{Yoshihara2006, Bylander2011}.
+
+This model diverges at $\omega = 0$, reflecting the fact that there is always a low-frequency cutoff set by the finite duration of the experiment. In numerical implementation, the value at $\omega = 0$ is set to zero.
+
+\subsection{Implications for Filter Functions}
+
+The Ramsey filter function $F_\text{Ramsey}(\omega, t) = 4\sin^2(\omega t/2)/\omega^2$ peaks at $\omega = 0$ and scales as $t^2$ there. Combined with $S_{1/f}(\omega) \propto 1/\omega$, the integrand $S(\omega)F(\omega,t)$ is heavily weighted toward low frequencies. This is why Ramsey dephasing in superconducting qubits is dominated by $1/f$ noise and why Ramsey $T_2^*$ times are typically much shorter than echo $T_2$ times \cite{Bylander2011}.
+
+\section{White Noise Floor}
+
+\subsection{Physical Origin}
+
+At frequencies above the $1/f$ knee, the fluctuator-dominated noise falls below a constant background arising from Johnson-Nyquist thermal noise. Any resistive element at finite temperature $T$ generates voltage fluctuations with a flat power spectral density:
+
+\begin{equation}
+    S_V(\omega) = 4k_B T R
+\end{equation}
+
+independent of frequency \cite{Clerk2010}. In a superconducting qubit experiment, this noise enters through control lines, amplifiers, bias resistors, and readout electronics — all of which are at temperatures above the qubit's millikelvin operating point. The result is a frequency-independent noise floor that sets the minimum achievable $S(\omega)$.
+
+\subsection{Mathematical Model}
+
+\begin{equation}
+    \boxed{S_\text{white}(\omega) = S_0}
+\end{equation}
+
+where $S_0$ is a constant. The crossover frequency $\omega_c$ at which $1/f$ noise and white noise contribute equally is found by setting $A/\omega_c^\alpha = S_0$, giving $\omega_c = (A/S_0)^{1/\alpha}$.
+
+\subsection{Implications for Filter Functions}
+
+Echo sequences suppress low-frequency $1/f$ noise by refocusing slow phase accumulation. However, white noise cannot be refocused — it contributes uniformly regardless of the pulse sequence. This sets a fundamental limit on coherence time achievable through dynamical decoupling: even with infinitely many pulses, the white noise floor remains and causes irreversible dephasing \cite{Cywinski2008}.
+
+\section{Lorentzian TLS Peaks}
+
+\subsection{Physical Origin}
+
+Individual two-level system defects — atomic tunneling systems in amorphous oxides, dangling bonds at interfaces, or trapped charges — each have a well-defined resonance frequency $\omega_k$ and a relaxation rate $\gamma_k$ \cite{Muller2019, Martinis2005}. When a TLS couples to the qubit, it generates fluctuations at its resonance frequency, producing a peaked noise contribution. The lineshape is Lorentzian because the TLS is a damped two-state system:
+
+\begin{equation}
+    S_{TLS,k}(\omega) = \frac{A_k \gamma_k^2}{(\omega - \omega_k)^2 + \gamma_k^2}
+\end{equation}
+
+A slowly relaxing TLS ($\gamma_k$ small) produces a sharp, narrow peak. A fast-relaxing TLS produces a broad, low peak. In real devices, multiple TLS defects contribute at different frequencies, producing a forest of Lorentzian peaks superimposed on the $1/f$ + white background \cite{Muller2019}.
+
+\subsection{Mathematical Model}
+
+\begin{equation}
+    \boxed{S_{TLS}(\omega) = \frac{A \gamma^2}{(\omega - \omega_0)^2 + \gamma^2}}
+\end{equation}
+
+where $A$ is the peak amplitude, $\omega_0$ is the TLS resonance frequency, and $\gamma$ is the half-width at half-maximum (HWHM), equal to the TLS relaxation rate.
+
+\subsection{Implications for Filter Functions and Resonance Condition}
+
+When a dynamical decoupling sequence's filter peak coincides with a TLS resonance — i.e., when $\omega_\text{peak}(n, t) = \omega_k$ — the coherence decay is dramatically enhanced rather than suppressed. This is the \textbf{resonance condition}:
+
+\begin{equation}
+    \frac{n\pi}{t} = \omega_k
+\end{equation}
+
+For CPMG-$n$ with varying $t$, the filter peak sweeps through the spectrum and periodically resonates with TLS defects, producing characteristic dips in the coherence as a function of $t$. This effect has been experimentally observed in superconducting flux qubits \cite{Bylander2011} and is one of the primary signatures used to identify and locate TLS defects in device characterization.
+
+Crucially, this same resonance condition is what makes high-$n$ CPMG sequences useful for TLS spectroscopy: by sweeping $n$ and $t$, one can map out the locations of TLS resonances in $S(\omega)$ with high frequency resolution.
+
+\section{Combined Noise Model}
+
+The full noise model used in this project is:
+
+\begin{equation}
+    S(\omega) = \frac{A_{1/f}}{\omega^\alpha} + S_0 + \sum_k \frac{A_k \gamma_k^2}{(\omega - \omega_k)^2 + \gamma_k^2}
+\end{equation}
+
+This model is implemented in \texttt{simulation/noise\_models.py} and used as the ground-truth $S(\omega)$ for simulation validation of the inversion pipeline. The inversion problem — recovering $S(\omega)$ from measured $\chi(t)$ — is treated in documents 05--08.
+
+\begin{thebibliography}{9}
+
+\bibitem{Paladino2014}
+E. Paladino, Y. M. Galperin, G. Falci, and B. L. Altshuler,
+\textit{$1/f$ noise: Implications for solid-state quantum information},
+Rev. Mod. Phys. \textbf{86}, 361 (2014).
+
+\bibitem{Yoshihara2006}
+F. Yoshihara, K. Harrabi, A. O. Niskanen, Y. Nakamura, and J. S. Tsai,
+\textit{Decoherence of Flux Qubits due to $1/f$ Flux Noise},
+Phys. Rev. Lett. \textbf{97}, 167001 (2006).
+
+\bibitem{Bylander2011}
+J. Bylander et al.,
+\textit{Noise spectroscopy through dynamical decoupling with a superconducting flux qubit},
+Nature Physics \textbf{7}, 565 (2011).
+
+\bibitem{Clerk2010}
+A. A. Clerk, M. H. Devoret, S. M. Girvin, F. Marquardt, and R. J. Schoelkopf,
+\textit{Introduction to quantum noise, measurement, and amplification},
+Rev. Mod. Phys. \textbf{82}, 1155 (2010).
+
+\bibitem{Muller2019}
+C. M\"{u}ller, J. H. Cole, and J. Lisenfeld,
+\textit{Towards understanding two-level-systems in amorphous solids},
+Rep. Prog. Phys. \textbf{82}, 124501 (2019).
+
+\bibitem{Martinis2005}
+J. M. Martinis et al.,
+\textit{Decoherence in Josephson Qubits from Dielectric Loss},
+Phys. Rev. Lett. \textbf{95}, 210503 (2005).
+
+\bibitem{Cywinski2008}
+L. Cywi\'{n}ski, R. M. Lutchyn, C. P. Nave, and S. Das Sarma,
+\textit{How to enhance dephasing time in superconducting qubits},
+Phys. Rev. B \textbf{77}, 174509 (2008).
+
+\end{thebibliography}
+
+\end{document}
