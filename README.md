@@ -155,8 +155,8 @@ matplotlib
 - [x] Theory derivation (Ramsey, Hahn echo filter functions)
 - [x] Bloch sphere decoherence visualization
 - [x] Filter functions (CPMG, XY-8, UDD)
-- [ ] Noise models
-- [ ] Chi(t) numerical computation
+- [x] Noise models
+- [x] Chi(t) numerical computation
 - [ ] Inversion methods
 - [ ] Bayesian adaptive spectroscopy
 - [ ] RB-based spectroscopy
